@@ -1,67 +1,91 @@
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import {
-  decrement,
-  increment,
-  incrementByAmount,
-  incrementAsync,
-  incrementIfOdd,
-  selectCount,
-} from "./redux/counter/counterSlice";
-import styles from './styles/Counter.module.css';
+  createBrowserRouter,
+  Outlet,
+  RouterProvider,
+} from "react-router-dom";
+import LoginPage from './pages/login';
+import Contact from './pages/contact';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Home from './components/Home';
+import RegisterPage from './pages/register';
+import { callFetchAccount } from './services/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { doGetAccountAction } from './redux/account/accountSlice';
+import Loading from './components/Loading';
+import NotFound from './components/NotFound';
+import AdminPage from './pages/admin';
+import ProtectedRoute from './components/ProtectedRoute';
 
-export default function App() {
-  const count = useSelector(selectCount);
-  const dispatch = useDispatch();
-  const [incrementAmount, setIncrementAmount] = useState('2');
-
-  const incrementValue = Number(incrementAmount) || 0;
-
+const Layout = () => {
   return (
-    <div>
-      <div className={styles.row}>
-        <button
-          className={styles.button}
-          aria-label="Decrement value"
-          onClick={() => dispatch(decrement())}
-        >
-          -
-        </button>
-        <span className={styles.value}>{count}</span>
-        <button
-          className={styles.button}
-          aria-label="Increment value"
-          onClick={() => dispatch(increment())}
-        >
-          +
-        </button>
-      </div>
-      <div className={styles.row}>
-        <input
-          className={styles.textbox}
-          aria-label="Set increment amount"
-          value={incrementAmount}
-          onChange={(e) => setIncrementAmount(e.target.value)}
-        />
-        <button
-          className={styles.button}
-          onClick={() => dispatch(incrementByAmount(incrementValue))}
-        >
-          Add Amount
-        </button>
-        <button
-          className={styles.asyncButton}
-          onClick={() => dispatch(incrementAsync(incrementValue))}
-        >
-          Add Async
-        </button>
-        <button
-          className={styles.button}
-          onClick={() => dispatch(incrementIfOdd(incrementValue))}
-        >
-          Add If Odd
-        </button>
-      </div>
+    <div className='layout-app'>
+      <Header />
+      <Outlet />
+      <Footer />
+
     </div>
-  );
+  )
+}
+export default function App() {
+  const dispatch = useDispatch()
+  const isAuthenticated = useSelector(state => state.account.isAuthenticated)
+
+  const getAccount = async () => {
+    if(window.location.pathname === '/login' || window.location.pathname === '/admin'){
+      return;
+    }
+    const res = await callFetchAccount();
+    if(res && res.data){
+      dispatch(doGetAccountAction(res.data));
+    }
+  }
+
+  useEffect(() => {
+    getAccount()
+  }, [])
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Layout />,
+      errorElement: <NotFound/>,
+      children: [
+        { index: true, element: <Home /> },
+        {
+          path: "contacts",
+          element: <Contact />,
+        },
+      ],
+    },
+    {
+      path: "/login",
+      element: <LoginPage />,
+    },
+    {
+      path: "/register",
+      element: <RegisterPage />,
+    },
+    {
+      path: "/admin",
+      element: <Layout />,
+      errorElement: <NotFound/>,
+      children: [
+        { index: true, element:<ProtectedRoute><AdminPage/></ProtectedRoute>},
+        {
+          path: "user",
+          element: <Contact />,
+        },
+      ],
+    },
+  ]);
+  return (
+    <>
+      {isAuthenticated === true || window.location.pathname === "/login" || window.location.pathname === '/admin' ?
+      <RouterProvider router={router}/>
+      :
+      <Loading/>
+      }
+    </>
+  )
 }
