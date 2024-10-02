@@ -28,16 +28,37 @@ const Layout = () => {
     </div>
   )
 }
+
+const LayoutAdmin = () => {
+  const isAdminRoute = window.location.pathname.startsWith('/admin');
+  const user = useSelector(state => state.account.user);
+  const userRole = user.user.role.name;
+
+
+  return (
+    <div className='layout-app'>
+      {isAdminRoute && userRole === 'SUPER ADMIN' && <Header />}
+
+      <Outlet />
+      {isAdminRoute && userRole === 'SUPER ADMIN' && <Footer />}
+
+
+    </div>
+  )
+}
 export default function App() {
   const dispatch = useDispatch()
   const isAuthenticated = useSelector(state => state.account.isAuthenticated)
 
   const getAccount = async () => {
-    if(window.location.pathname === '/login' || window.location.pathname === '/admin'){
+    if (window.location.pathname === '/login' ||
+      window.location.pathname === '/register' ||
+      window.location.pathname === '/'
+    ) {
       return;
     }
     const res = await callFetchAccount();
-    if(res && res.data){
+    if (res && res.data) {
       dispatch(doGetAccountAction(res.data));
     }
   }
@@ -49,7 +70,7 @@ export default function App() {
     {
       path: "/",
       element: <Layout />,
-      errorElement: <NotFound/>,
+      errorElement: <NotFound />,
       children: [
         { index: true, element: <Home /> },
         {
@@ -68,10 +89,15 @@ export default function App() {
     },
     {
       path: "/admin",
-      element: <Layout />,
-      errorElement: <NotFound/>,
+      element: <LayoutAdmin />,
+      errorElement: <NotFound />,
       children: [
-        { index: true, element:<ProtectedRoute><AdminPage/></ProtectedRoute>},
+        {
+          index: true, element:
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+        },
         {
           path: "user",
           element: <Contact />,
@@ -81,10 +107,12 @@ export default function App() {
   ]);
   return (
     <>
-      {isAuthenticated === true || window.location.pathname === "/login" || window.location.pathname === '/admin' ?
-      <RouterProvider router={router}/>
-      :
-      <Loading/>
+      {isAuthenticated === true || window.location.pathname === "/login" ||
+        window.location.pathname === "/register" ||
+        window.location.pathname === '/' ?
+        <RouterProvider router={router} />
+        :
+        <Loading />
       }
     </>
   )
