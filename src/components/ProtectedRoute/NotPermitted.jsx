@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 
 const NotPermitted = () => {
     const navigate = useNavigate();
-    return(
-        <>
-        <Result
+    return (
+        <> 
+            <Result
                 status="403"
                 title="403"
-                subTitle="Sorry, the page you visited does not exist."
-                extra={<Button type="primary" onClick={()=>navigate('/')} >Back Home</Button>}
+                subTitle="Sorry, you are not authorized to access this page."
+                extra={<Button type="primary"  onClick={() => navigate('/')}>Back Home</Button>}
             />
         </>
     )

@@ -1,0 +1,17 @@
+.title-admin{
+    text-transform: uppercase;
+    text-align: center;
+    margin: 20px;
+    font-weight: 600;
+
+    
+}
+
+.header-admin{
+   display: flex;
+   justify-content: space-between;
+    .admin-account{
+        text-align: right;
+        margin-right: 20px;
+    }
+}
