@@ -7,7 +7,7 @@ import { Button, Layout, Menu, message, theme } from 'antd';
 import "./style.scss"
 import { RiDashboardHorizontalLine } from "react-icons/ri";
 import { FaUsers } from "react-icons/fa6";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { FaFileInvoiceDollar } from "react-icons/fa";
 import { FaFileContract } from "react-icons/fa6";
 import { FaToolbox } from "react-icons/fa";
@@ -139,7 +139,7 @@ const LayoutAdmin = () => {
                                 height: 64,
                             }}
                         />
-                        <> <Dropdown overlay={menu} className='admin-account'>
+                        <> <Dropdown menu = {menu} className='admin-account'>
                             <a onClick={(e) => e.preventDefault()}>
                                 <Space>
                                     Welcome {user.name} !
@@ -157,7 +157,7 @@ const LayoutAdmin = () => {
                             borderRadius: borderRadiusLG,
                         }}
                     >
-                        Content
+                        <Outlet/>
                     </Content>
                 </Layout>
 

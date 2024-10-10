@@ -1,3 +1,4 @@
+import { message } from "antd";
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_BE_URL;
@@ -40,11 +41,20 @@ instance.interceptors.response.use(function (response) {
         if(access_token){
             error.config.headers['Authorization'] = `Bearer ${access_token}`;
             localStorage.setItem('access_token', access_token);
-            console.log(access_token)
+           
             return instance.request(error.config);
         }
         
        
+      }
+
+      if(
+        error.config && error.response
+        && +error.response.status === 400
+        && error.config.url === '/api/v1/auth/refresh'
+      ){
+        window.location.href = '/login';
+        
       }
     
 

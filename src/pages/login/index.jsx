@@ -29,7 +29,7 @@ const LoginPage = () => {
                     
             })
         }
-        console.log(values)
+       
 
     };
     return (

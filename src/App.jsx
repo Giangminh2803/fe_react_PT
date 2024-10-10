@@ -19,6 +19,8 @@ import AdminPage from './pages/admin';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotPermitted from './components/ProtectedRoute/NotPermitted';
 import LayoutAdmin from './components/Admin/LayoutAdmin';
+import ManageUserPage from './pages/admin/User';
+import ManagePermissionPage from './pages/admin/Permission';
 
 const Layout = () => {
   return (
@@ -76,7 +78,7 @@ export default function App() {
     {
       path: "/admin",
       element: <LayoutAdmin />,
-       errorElement: <NotFound/>,
+      errorElement: <NotFound />,
       children: [
         {
           index: true, element:
@@ -85,15 +87,26 @@ export default function App() {
             </ProtectedRoute>
         },
         {
-          path: "user",
-          element: <Contact />,
+          path: "users",
+          element:
+            <ProtectedRoute>
+              <ManageUserPage />
+            </ProtectedRoute>,
+        },
+        {
+          path: "permissions",
+          element:
+            <ProtectedRoute>
+              <ManagePermissionPage />
+            </ProtectedRoute>,
         },
       ],
     },
   ]);
   return (
     <>
-      {isAuthenticated === true || window.location.pathname === "/login" ||
+      {isAuthenticated === true ||
+        window.location.pathname === "/login" ||
         window.location.pathname === "/register" ||
         window.location.pathname === '/' ?
         <RouterProvider router={router} />
